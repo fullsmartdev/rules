@@ -26,5 +26,8 @@ ts_library(
     name = "bar_ts_library",
     srcs = ["bar.ts"],
     tsconfig = ":tsconfig.json",
-    deps = [":foo_ts_library"],
+    deps = [
+        ":foo_ts_library",
+        "//examples/some_library:lib",
+    ],
 )
