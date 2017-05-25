@@ -12,13 +12,33 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-package(default_visibility = ["//visibility:public"])
+load("//:defs.bzl", "ts_library")
+load("//internal:node.bzl", "node_binary")
 
-load(":node.bzl", "node_binary")
-
+# Vanilla typescript compiler: run the tsc.js binary distributed by TypeScript
 node_binary(
-    name = "tsc_wrapped",
+    name = "tsc",
     data = ["@yarn//installed:node_modules"],
+    main = "yarn/installed/node_modules/typescript/lib/tsc.js",
+)
+
+# Build our custom compiler using the vanilla one
+ts_library(
+  name = "tsc_wrapped",
+  srcs = glob(["*.ts"]),
+  tsconfig = ":tsconfig.json",
+  tsc = ":tsc",
+)
+
+# Other ts_library rules will use this custom compiler, which calls the
+# TypeScript APIs to act like tsc, but adds capabilities like Bazel workers.
+node_binary(
+    name = "tsc_wrapped_bin",
+    data = [
+      ":tsc_wrapped",
+      "@yarn//installed:node_modules",
+    ],
     # TODO(alexeagle): plug in tsc_wrapped.js instead
     main = "yarn/installed/node_modules/typescript/lib/tsc.js",
+    visibility = ["//visibility:public"],
 )
