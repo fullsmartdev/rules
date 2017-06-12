@@ -12,15 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-workspace(name = "io_bazel_rules_typescript")
-
-load("//:defs.bzl", "node_repositories", "yarn_install")
-
-# Install a hermetic version of node.
-# After this is run, label @io_bazel_rules_typescript_node//:bin/node will exist
-node_repositories()
-
-# Install yarn, and run yarn install to create node_modules.
-# After this is run, label @yarn//installed:node_modules will exist.
-# (But your rules can reference //:node_modules instead)
-yarn_install(package_json = "//:package.json")
+# The node_modules directory is created by `yarn install` or `npm install`
+# WORKAROUND for https://github.com/bazelbuild/bazel/issues/374#issuecomment-296217940
+# see notes in internal/yarn_install.bzl
+filegroup(
+    name = "node_modules",
+    srcs = glob(["node_modules/**/*"]),
+    visibility = ["//visibility:public"],
+)
