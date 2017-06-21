@@ -12,12 +12,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-""" Public API surface is re-exported here.
+workspace(name = "io_bazel_rules_typescript")
 
-Users should not load files under "/internal"
-"""
-load("//internal:build_defs.bzl", "ts_library")
-load("//internal:node.bzl", "nodejs_binary")
-load("//internal:node_install.bzl", "node_repositories")
-load("//internal:yarn_check.bzl", "yarn_check")
-load("//internal:npm_install.bzl", "npm_install")
+load("//:defs.bzl", "node_repositories")
+
+# Install a hermetic version of node.
+# After this is run, these labels will be available:
+# - The nodejs install:
+#   @io_bazel_rules_typescript_node//:bin/node
+#   @io_bazel_rules_typescript_node//:bin/npm
+# - The yarn package manager:
+#   @yarn//:yarn
+# - An external repo symlink to the installed packages:
+#   @npm//installed:node_modules
+#   (User's rules can reference //:node_modules instead)
+node_repositories(package_json = "//:package.json")

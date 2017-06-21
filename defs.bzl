@@ -12,16 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-workspace(name = "io_bazel_rules_typescript")
+""" Public API surface is re-exported here.
 
-load("//:defs.bzl", "node_repositories", "yarn_check")
-
-# Install a hermetic version of node.
-# After this is run, label @io_bazel_rules_typescript_node//:bin/node will exist
-node_repositories()
-
-# Install yarn, and check the node_modules directory.
-# After this is run, label @npm//installed:node_modules will exist.
-# (But your rules can reference //:node_modules instead)
-# Note, you could use npm_install as an alternative
-yarn_check(yarn_lock = "//:yarn.lock")
+Users should not load files under "/internal"
+"""
+load("//internal:build_defs.bzl", "ts_library")
+load("//internal:node.bzl", "nodejs_binary")
+load("//internal:node_install.bzl", "node_repositories")
