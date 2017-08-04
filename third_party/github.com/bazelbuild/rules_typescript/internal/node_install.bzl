@@ -15,7 +15,7 @@
 """Install NodeJS when the user runs node_repositories() from their WORKSPACE.
 
 We fetch a specific version of Node, to ensure builds are hermetic.
-We then create a repository @build_bazel_rules_nodejs_node which provides the
+We then create a repository @build_bazel_rules_typescript_node which provides the
 node binary to other rules.
 """
 
@@ -92,16 +92,15 @@ package(default_visibility = ["//visibility:public"])
 exports_files(['yarn.sh'])
 alias(name = "yarn", actual = ":yarn.sh")
 """)
-  ctx.file("yarn.sh", "#!/bin/bash" + "".join(["""
+  ctx.file("yarn.sh", """#!/bin/bash
 ROOT="$(dirname "{}")"
 NODE="{}"
 SCRIPT="{}"
 (cd "$ROOT"; "$NODE" "$SCRIPT" "$@")
 """.format(
-    ctx.path(package_json),
+    ctx.path(ctx.attr.package_json),
     ctx.path(ctx.attr._node),
-    ctx.path("bin/yarn.js"))
-    for package_json in ctx.attr.package_json]), executable = True)
+    ctx.path("bin/yarn.js")), executable = True)
   ctx.download_and_extract(
       [
           "http://mirror.bazel.build/github.com/yarnpkg/yarn/releases/download/v0.22.0/yarn-v0.22.0.tar.gz",
@@ -116,12 +115,12 @@ load(":executables.bzl", "get_node")
 _yarn_repo = repository_rule(
     _yarn_impl,
     attrs = {
-        "package_json": attr.label_list(),
+        "package_json": attr.label(),
         "_node": attr.label(default = get_node(), allow_files=True, single_file=True),
      },
 )
 
 def node_repositories(package_json):
-  _node_repo(name = "build_bazel_rules_nodejs_node")
+  _node_repo(name = "build_bazel_rules_typescript_node")
 
   _yarn_repo(name = "yarn", package_json = package_json)
