@@ -12,11 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""node and TypeScript compiler labels.
-"""
+workspace(name = "build_bazel_rules_nodejs")
 
-def get_tsc():
-  return Label("//internal/tsc_wrapped:tsc_wrapped_bin")
+load("//:defs.bzl", "node_repositories")
 
-def get_node():
-  return Label("@build_bazel_rules_typescript_node//:bin/node")
+# Install a hermetic version of node.
+# After this is run, these labels will be available:
+# - The nodejs install:
+#   @build_bazel_rules_nodejs_node//:bin/node
+#   @build_bazel_rules_nodejs_node//:bin/npm
+# - The yarn package manager:
+#   @yarn//:yarn
+node_repositories(package_json = "//:package.json")

@@ -12,15 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-package(default_visibility = ["//visibility:public"])
+"""node label.
+"""
 
-load("//:defs.bzl", "ts_library")
-
-ts_library(
-    name = "lib",
-    srcs = ["library.ts"],
-    # Allow this library to be imported from `some-lib`
-    module_name = "some-lib",
-    # The imported path should be the library.d.ts file
-    module_root = "library",
-)
+def get_node():
+  return Label("@build_bazel_rules_nodejs_node//:bin/node")
