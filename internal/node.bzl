@@ -18,11 +18,13 @@ load(":executables.bzl", "get_node")
 load(":common/module_mappings.bzl", "module_mappings_runtime_aspect")
 
 def _sources_aspect_impl(target, ctx):
-  result = depset()
+  result = set()
   if hasattr(ctx.rule.attr, "deps"):
     for dep in ctx.rule.attr.deps:
       if hasattr(dep, "node_sources"):
         result += dep.node_sources
+  # Note layering: until we have JS interop providers, this needs to know how to
+  # get TypeScript outputs.
   if hasattr(target, "typescript"):
     result += target.typescript.es5_sources
   return struct(node_sources = result)
@@ -49,6 +51,7 @@ def _write_loader_script(ctx):
       substitutions={
           "TEMPLATED_module_roots": "\n  " + ",\n  ".join(module_mappings),
           "TEMPLATED_entry_point": ctx.attr.entry_point,
+          "TEMPLATED_label_package": ctx.label.package,
           "TEMPLATED_workspace_name": ctx.workspace_name,
       },
       executable=True,
@@ -56,8 +59,8 @@ def _write_loader_script(ctx):
 
 def _nodejs_binary_impl(ctx):
     node = ctx.file._node
-    node_modules = ctx.files._node_modules
-    sources = depset()
+    node_modules = ctx.files.node_modules
+    sources = set()
     for d in ctx.attr.data:
       if hasattr(d, "node_sources"):
         sources += d.node_sources
@@ -97,7 +100,7 @@ nodejs_binary = rule(
             default = get_node(),
             allow_files = True,
             single_file = True),
-        "_node_modules": attr.label(
+        "node_modules": attr.label(
             default = Label("@//:node_modules")),
         "_launcher_template": attr.label(
             default = Label("//internal:node_launcher.sh"),

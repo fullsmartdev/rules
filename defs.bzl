@@ -12,6 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-package(default_visibility = ["//visibility:public"])
+""" Public API surface is re-exported here.
 
-exports_files(["node_launcher.sh", "node_loader.js", "worker_protocol.proto"])
+Users should not load files under "/internal"
+"""
+load("//internal:node.bzl", "nodejs_binary")
+load("//internal:node_install.bzl", "node_repositories")
