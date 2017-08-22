@@ -1,4 +1,20 @@
 /**
+ * @license
+ * Copyright 2017 The Bazel Authors. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ *
+ * You may obtain a copy of the License at
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+/**
  * @fileoverview Patched NodeJS module loader for bazel. This template is
  * expanded to contain module name -> path mappings and then patches the
  * NodeJS require() function to substitute the appropriate paths.
@@ -47,20 +63,20 @@ function runfilesDir() {
 var originalResolveFilename = module.constructor._resolveFilename;
 module.constructor._resolveFilename =
     function(request, parent) {
-  try {
-    return originalResolveFilename(request, parent);
-  } catch (e) {
-  }
-  try {
-    return originalResolveFilename(path.join(runfilesDir(), request), parent);
-  } catch (e) {
-  }
-  try {
-    return originalResolveFilename(
-        path.join(
-            runfilesDir(), 'TEMPLATED_workspace_name', 'TEMPLATED_label_package', 'node_modules', request),
-        parent);
-  } catch (e) {
+  var failedResolutions = [];
+  var resolveLocations = [
+    request,
+    path.join(runfilesDir(), request),
+    path.join(
+      runfilesDir(), 'TEMPLATED_workspace_name', 'TEMPLATED_label_package',
+      'node_modules', request),
+  ];
+  for (var location of resolveLocations) {
+    try {
+      return originalResolveFilename(location, parent);
+    } catch (e) {
+      failedResolutions.push(location);
+    }
   }
 
   var moduleRoot = resolveToModuleRoot(request);
@@ -72,6 +88,10 @@ module.constructor._resolveFilename =
     }
     return filename;
   }
+  var error = new Error(`Cannot find module '${request}'\n  looked in:` +
+    failedResolutions.map(r => '\n   ' + r));
+  error.code = 'MODULE_NOT_FOUND';
+  throw error;
 }
 
 if (require.main === module) {
