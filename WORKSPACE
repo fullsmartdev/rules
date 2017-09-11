@@ -12,8 +12,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-""" Public API surface is re-exported here.
+workspace(name = "build_bazel_rules_nodejs")
 
-Users should not load files under "/internal"
-"""
-load("//internal:build_defs.bzl", "ts_library")
+load("//:defs.bzl", "node_repositories")
+
+# Install a hermetic version of node.
+# After this is run, these labels will be available:
+# - The nodejs install:
+#   @nodejs//:bin/node
+#   @nodejs//:bin/npm
+# - The yarn package manager:
+#   @yarn//:yarn
+node_repositories(package_json = ["//examples/rollup:package.json"])
+
+# Now the user must run either
+# bazel run @yarn//:yarn
+# or
+# bazel run @nodejs//:npm
