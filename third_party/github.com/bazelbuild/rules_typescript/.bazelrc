@@ -1,2 +1,0 @@
-build --strategy=TypeScriptCompile=worker
-test --test_output=errors
