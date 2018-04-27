@@ -1,0 +1,7 @@
+{
+  "description": "runtime dependencies for rollup example",
+  "devDependencies": {
+    "jasmine": "~2.8.0",
+    "rollup": "~0.48.2"
+  }
+}
