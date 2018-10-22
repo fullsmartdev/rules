@@ -1,0 +1,4 @@
+.idea
+/bazel-*
+/examples/*/bazel-*
+node_modules
