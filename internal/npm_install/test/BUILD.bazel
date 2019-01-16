@@ -1,0 +1,39 @@
+load("@build_bazel_rules_nodejs//:defs.bzl", "jasmine_node_test", "nodejs_binary")
+
+filegroup(
+    name = "node_modules",
+    srcs = glob(["node_modules/**"]),
+)
+
+filegroup(
+    name = "goldens",
+    srcs = glob(["golden/**"]),
+)
+
+jasmine_node_test(
+    name = "test",
+    srcs = glob(["*.spec.js"]),
+    data = [
+        ":check.js",
+        ":goldens",
+        ":node_modules",
+        ":yarn.lock",
+    ],
+    node_modules = ":node_modules",
+    deps = ["//internal/npm_install:generate_build_file"],
+)
+
+nodejs_binary(
+    name = "test.accept",
+    data = [
+        ":check.js",
+        ":goldens",
+        ":node_modules",
+        ":update_golden.js",
+        ":yarn.lock",
+        "//internal/npm_install:generate_build_file",
+    ],
+    entry_point = "build_bazel_rules_nodejs/internal/npm_install/test/update_golden.js",
+    install_source_map_support = False,
+    node_modules = ":node_modules",
+)
