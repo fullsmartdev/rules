@@ -1,0 +1,81 @@
+load("@bazel_tools//tools/build_defs/pkg:pkg.bzl", "pkg_tar")
+load("@build_bazel_rules_nodejs//:defs.bzl", "nodejs_binary", "npm_package")
+load("//internal:defaults.bzl", "ts_library")
+
+package(default_visibility = ["//visibility:public"])
+
+exports_files([
+    "test-main.js",
+    "karma.conf.js",
+    # Exported to be consumed for generating skydoc.
+    "ts_web_test.bzl",
+    "ts_web_test_suite.bzl",
+])
+
+ts_library(
+    name = "bazel_karma",
+    srcs = glob(["*.ts"]),
+    module_name = "@bazel/karma",
+    tsconfig = "//internal/karma:tsconfig.json",
+    deps = [
+        "@npm//@types/node",
+        "@npm//tmp",
+    ],
+)
+
+nodejs_binary(
+    name = "karma_bin",
+    data = [
+        ":bazel_karma",
+        "@npm//jasmine-core",
+        "@npm//karma",
+        "@npm//karma-chrome-launcher",
+        "@npm//karma-firefox-launcher",
+        "@npm//karma-jasmine",
+        "@npm//karma-requirejs",
+        "@npm//karma-sauce-launcher",
+        "@npm//karma-sourcemap-loader",
+        "@npm//requirejs",
+        "@npm//tmp",
+    ],
+    entry_point = "karma/bin/karma",
+    install_source_map_support = False,
+)
+
+genrule(
+    name = "license_copy",
+    srcs = ["//:LICENSE"],
+    outs = ["LICENSE"],
+    cmd = "cp $< $@",
+)
+
+genrule(
+    name = "check_version_copy",
+    srcs = ["//tools:check_version.js"],
+    outs = ["check_version.js"],
+    cmd = "cp $< $@",
+)
+
+npm_package(
+    name = "npm_package",
+    srcs = [
+        "README.md",
+        "karma.js",
+        "package.json",
+    ],
+    deps = [
+        ":check_version_copy",
+        ":bazel_karma",
+        ":license_copy",
+    ],
+)
+
+pkg_tar(
+    name = "package",
+    srcs = [
+        "BUILD.bazel",
+        "package.json",
+        "ts_web_test.bzl",
+    ],
+    package_dir = "karma",
+)
