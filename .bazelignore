@@ -1,0 +1,9 @@
+node_modules
+# Examples are tested by running examples/test_example.sh outside of Bazel
+examples/
+internal/e2e/bazel_workspaces
+internal/e2e/bazel_workspaces_compat
+internal/e2e/fine_grained_symlinks
+internal/e2e/node_loader_no_preserve_symlinks
+internal/e2e/node_loader_preserve_symlinks
+internal/e2e/packages
