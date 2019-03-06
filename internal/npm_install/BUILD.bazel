@@ -1,0 +1,24 @@
+load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
+
+# Exported to be consumed for generating skydoc.
+exports_files(["npm_install.bzl"])
+
+bzl_library(
+    name = "bzl",
+    srcs = glob(["*.bzl"]),
+    visibility = ["//visibility:public"],  #["@npm_bazel_typescript//:__subpackages__"],
+    deps = [
+    ],
+)
+
+filegroup(
+    name = "generate_build_file",
+    srcs = ["generate_build_file.js"],
+    visibility = ["//internal:__subpackages__"],
+)
+
+filegroup(
+    name = "package_contents",
+    srcs = glob(["*"]),
+    visibility = ["//:__pkg__"],
+)
