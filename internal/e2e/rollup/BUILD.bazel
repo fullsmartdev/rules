@@ -1,0 +1,37 @@
+load("@build_bazel_rules_nodejs//:defs.bzl", "jasmine_node_test")
+load("//:defs.bzl", "rollup_bundle")
+
+rollup_bundle(
+    name = "bundle",
+    srcs = [
+        "bar.js",
+        "foo.js",
+    ],
+    entry_point = "internal/e2e/rollup/foo.js",
+    globals = {"some_global_var": "runtime_name_of_global_var"},
+    license_banner = ":license.txt",
+    deps = [
+        "//internal/e2e/rollup/fum:fumlib",
+        "@npm//hello",
+    ],
+)
+
+jasmine_node_test(
+    name = "test",
+    srcs = glob(["*.spec.js"]),
+    configuration_env_vars = ["UPDATE_GOLDEN"],
+    data = glob([
+        "*_golden.js_",
+        "*_golden.js.map",
+    ]) + [
+        ":bundle",
+        ":bundle.cjs.js",
+        ":bundle.umd.js",
+        ":bundle.min_debug.js",
+    ],
+    deps = [
+        "//internal/e2e:check_lib",
+        "@npm//jasmine",
+        "@npm//unidiff",
+    ],
+)
