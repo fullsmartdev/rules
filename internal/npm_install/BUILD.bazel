@@ -1,0 +1,39 @@
+load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
+load("//:defs.bzl", "nodejs_binary")
+
+bzl_library(
+    name = "bzl",
+    srcs = glob(["*.bzl"]),
+    visibility = ["//visibility:public"],
+)
+
+# Exported to be consumed for generating skydoc.
+exports_files(["npm_install.bzl"])
+
+filegroup(
+    name = "generate_build_file",
+    srcs = [
+        "generate_build_file.js",
+    ],
+    visibility = ["//internal:__subpackages__"],
+)
+
+filegroup(
+    name = "package_contents",
+    srcs = glob(
+        include = ["*"],
+        exclude = ["test"],
+    ),
+    visibility = ["//:__pkg__"],
+)
+
+nodejs_binary(
+    name = "browserify-wrapped",
+    data = [
+        ":browserify-wrapped.js",
+        "//third_party/github.com/browserify/browserify:sources",
+    ],
+    entry_point = "build_bazel_rules_nodejs/internal/npm_install/browserify-wrapped.js",
+    install_source_map_support = False,
+    visibility = ["//visibility:public"],
+)
