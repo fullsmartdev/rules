@@ -1,0 +1,63 @@
+load("//:defs.bzl", "jasmine_node_test", "rollup_bundle")
+
+rollup_bundle(
+    name = "bundle",
+    srcs = glob(
+        ["*.js"],
+        exclude = ["*.spec.js"],
+    ),
+    additional_entry_points = ["build_bazel_rules_nodejs/internal/e2e/rollup_code_splitting/additional_entry.js"],
+    entry_point = ":main1.js",
+    license_banner = ":license.txt",
+)
+
+jasmine_node_test(
+    name = "test",
+    srcs = [
+        "additional_entry.spec.js",
+        "main1.spec.js",
+    ],
+    data = glob([
+        "goldens/*",
+    ]) + [
+        ":bundle",
+        ":bundle.min.js",
+        ":bundle.min.es2015.js",
+    ],
+    deps = [
+        "//internal/e2e:check_lib",
+        "@npm//jasmine",
+        "@npm//unidiff",
+    ],
+)
+
+filegroup(
+    name = "bundle-outputgroups-es2015",
+    srcs = [":bundle"],
+    output_group = "es2015",
+)
+
+filegroup(
+    name = "bundle-outputgroups-es5_min",
+    srcs = [":bundle"],
+    output_group = "es5_min",
+)
+
+filegroup(
+    name = "bundle-outputgroups-es5_min_debug",
+    srcs = [":bundle"],
+    output_group = "es5_min_debug",
+)
+
+jasmine_node_test(
+    name = "test-outputgroups",
+    srcs = ["outputgroups.spec.js"],
+    data = [
+        ":bundle-outputgroups-es2015",
+        ":bundle-outputgroups-es5_min",
+        ":bundle-outputgroups-es5_min_debug",
+    ],
+    deps = [
+        "@npm//jasmine",
+    ],
+)
