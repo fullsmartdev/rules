@@ -1,0 +1,13 @@
+{
+  "dependencies": {
+    "@bazel/karma": "file:../../dist/npm_bazel_karma",
+    "@bazel/typescript": "file:../../dist/npm_bazel_typescript",
+    "@types/jasmine": "^3.3.12",
+    "jasmine": "^3.4.0",
+    "rxjs": "6.5.0",
+    "typescript": "2.9.2"
+  },
+  "scripts": {
+    "test": "bazel test ..."
+  }
+}
