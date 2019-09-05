@@ -1,0 +1,10 @@
+{
+    "name": "e2e-less",
+    "private": true,
+    "devDependencies": {
+        "@bazel/less": "latest"
+    },
+    "scripts": {
+      "test": "bazel test ..."
+    }
+}
