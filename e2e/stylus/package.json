@@ -1,0 +1,10 @@
+{
+    "name": "e2e-stylus",
+    "private": true,
+    "devDependencies": {
+        "@bazel/stylus": "latest"
+    },
+    "scripts": {
+      "test": "bazel test ..."
+    }
+}
