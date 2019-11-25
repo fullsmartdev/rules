@@ -1,9 +1,0 @@
-{
-  "private": true,
-  "devDependencies": {
-    "@bazel/jasmine": "^0.42.1"
-  },
-  "scripts": {
-    "test": "bazel test ..."
-  }
-}
