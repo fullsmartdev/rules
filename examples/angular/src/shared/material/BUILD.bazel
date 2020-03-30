@@ -1,0 +1,14 @@
+load("@npm_bazel_typescript//:index.bzl", "ts_library")
+
+package(default_visibility = ["//:__subpackages__"])
+
+ts_library(
+    name = "material",
+    srcs = glob(["*.ts"]),
+    tsconfig = "//src:tsconfig.json",
+    use_angular_plugin = True,
+    deps = [
+        "@npm//@angular/core",
+        "@npm//@angular/material",
+    ],
+)
