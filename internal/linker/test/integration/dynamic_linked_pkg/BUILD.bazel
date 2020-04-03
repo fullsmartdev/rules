@@ -1,9 +1,0 @@
-load("//internal/js_library:js_library.bzl", "js_library")
-
-package(default_visibility = ["//internal/linker/test:__subpackages__"])
-
-js_library(
-    name = "dynamic_linked_pkg",
-    package_name = "dynamic_linked",
-    srcs = ["index.js"],
-)
