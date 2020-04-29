@@ -1,0 +1,15 @@
+load("@build_bazel_rules_nodejs//internal/js_library:js_library.bzl", "js_library")
+load("@npm_bazel_typescript//:index.bzl", "ts_project")
+
+package(default_visibility = ["//packages/rollup:__subpackages__"])
+
+ts_project(
+    srcs = ["index.ts"],
+    deps = ["@npm//date-fns"],
+)
+
+js_library(
+    name = "foo_lib_a",
+    package_name = "@foo/lib/a",
+    srcs = [":index.js"],
+)
