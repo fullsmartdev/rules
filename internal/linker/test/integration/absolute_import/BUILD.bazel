@@ -1,0 +1,3 @@
+package(default_visibility = ["//internal/linker/test:__subpackages__"])
+
+exports_files(["index.js"])
