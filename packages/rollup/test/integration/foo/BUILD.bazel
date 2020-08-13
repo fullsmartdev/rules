@@ -1,0 +1,29 @@
+load("@build_bazel_rules_nodejs//internal/js_library:js_library.bzl", "js_library")
+load("//packages/typescript:index.bzl", "ts_project")
+load("//third_party/github.com/bazelbuild/bazel-skylib:rules/copy_file.bzl", "copy_file")
+
+package(default_visibility = ["//packages/rollup:__subpackages__"])
+
+copy_file(
+    name = "copy_user",
+    src = ":user.mjs",
+    out = ":user.js",
+)
+
+ts_project(
+    srcs = [
+        "index.ts",
+        "user.d.ts",
+    ],
+    deps = ["@npm//date-fns"],
+)
+
+js_library(
+    name = "foo_lib",
+    package_name = "@foo/lib",
+    srcs = [
+        "user.d.ts",
+        ":index.js",
+        ":user.js",
+    ],
+)
